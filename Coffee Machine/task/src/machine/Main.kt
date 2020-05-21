@@ -1,120 +1,147 @@
 package machine
+
 import java.util.*
 
-fun printResult(water: Int, milk: Int, beans: Int, cups:Int, money: Int): String {
-    val str = "\nThe coffee machine has:\n" +
-            "$water of water\n" +
-            "$milk of milk\n" +
-            "$beans of coffee beans\n" +
-            "$cups of disposable cups\n" +
-            "$money of money"
-    return str
-}
-fun action(): String {
-    val scanner = Scanner(System.`in`)
-    print("\nWrite action (buy, fill, take, remaining, exit): ")
-    return scanner.nextLine()
+enum class Product(val id: Int, val water: Int, val milk: Int, val beans: Int, val money: Int) {
+    ESPRESSO(1, 250, 0, 16, 4),
+    LATTE(2, 350, 75, 20, 7),
+    CAPPUCCINO(3, 200, 100, 12, 6),
+    NULL(0, 0, 0, 0, 0);
+
+    companion object {
+        fun findItem(id: Int): Product {
+            for (item in values()) {
+                if (id == item.id) return item
+            }
+            return NULL
+        }
+    }
 }
 
-fun main() {
-    val scanner = Scanner(System.`in`)
+class CoffeeMachine {
+    var state = "No activity"
+
+    fun inputData(): String {
+        val input = Scanner(System.`in`)
+        val data = input.nextLine()
+        return data
+    }
+
+    fun reState(str: String) {
+        this.state = str;
+
+    }
+
+    fun printResult(water: Int, milk: Int, beans: Int, cups: Int, money: Int): String {
+        val str = "\nThe coffee machine has:\n" +
+                "$water of water\n" +
+                "$milk of milk\n" +
+                "$beans of coffee beans\n" +
+                "$cups of disposable cups\n" +
+                "\$$money of money"
+        return str
+    }
+}
+
+fun main(args: Array<String>) {
+    val coffeeMachine = CoffeeMachine()
+    val espresso = Product.findItem(1)
+    val latte = Product.findItem(2)
+    val cappuccino = Product.findItem(3)
     var (hasWater, hasMilk, hasBeans, hasCups, hasMoney) = arrayOf(400, 540, 120, 9, 550)
-    val (espressoWater, espressoBeans, espressoMoney) = arrayOf(250, 16, 4)
-    val (latteWater, latteMilk, latteBeans, latteMoney) = arrayOf(350, 75, 20, 7)
-    val (cappuccinoWater, cappuccinoMilk, cappuccinoBeans, cappuccinoMoney) = arrayOf(200, 100, 12, 6)
-    var action = action()
 
-    while (action !== "") {
-        when (action) {
+    coffeeMachine.reState("start");
+
+    while (coffeeMachine.state !== "") {
+        when (coffeeMachine.state) {
+            "start" -> {
+                print("\nWrite action (buy, fill, take, remaining, exit): ")
+                coffeeMachine.reState(coffeeMachine.inputData());
+            }
             "buy" -> {
                 print("\nWhat do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back - to main menu: ")
-                val whatBuy = scanner.nextLine()
-                when (whatBuy) {
+                when (coffeeMachine.inputData()) {
                     "1" -> {
-                        if (hasWater >= espressoWater && hasBeans >= espressoBeans && hasCups > 0) {
+                        if (hasWater >= espresso.water && hasBeans >= espresso.beans && hasCups > 0) {
                             println("I have enough resources, making you a coffee!")
-                            hasWater -= espressoWater
-                            hasBeans -= espressoBeans
+                            hasWater -= espresso.water
+                            hasBeans -= espresso.beans
                             hasCups--
-                            hasMoney += espressoMoney
-                        } else if (hasWater < espressoWater) {
+                            hasMoney += espresso.money
+                        } else if (hasWater < espresso.water) {
                             println("Sorry, not enough water!")
-                        } else if (hasBeans < espressoBeans) {
+                        } else if (hasBeans < espresso.beans) {
                             println("Sorry, not enough coffee beans!")
                         } else {
                             println("Sorry, not enough cups!")
                         }
-                        action = action()
+                        coffeeMachine.reState("start");
                     }
                     "2" -> {
-                        if (hasWater >= latteWater && hasBeans >= latteBeans && hasMilk >= latteMilk && hasCups > 0) {
+                        if (hasWater >= latte.water && hasBeans >= latte.beans && hasMilk >= latte.milk && hasCups > 0) {
                             println("I have enough resources, making you a coffee!")
-                            hasWater -= latteWater
-                            hasBeans -= latteBeans
-                            hasMilk -= latteMilk
+                            hasWater -= latte.water
+                            hasBeans -= latte.beans
+                            hasMilk -= latte.milk
                             hasCups--
-                            hasMoney += latteMoney
-                        } else if (hasWater < latteWater) {
+                            hasMoney += latte.money
+                        } else if (hasWater < latte.water) {
                             println("Sorry, not enough water!")
-                        } else if (hasBeans < latteBeans) {
+                        } else if (hasBeans < latte.beans) {
                             println("Sorry, not enough coffee beans!")
-                        } else if (hasMilk < latteMilk) {
+                        } else if (hasMilk < latte.milk) {
                             println("Sorry, not enough milk!")
                         } else {
                             println("Sorry, not enough cups!")
                         }
-                        action = action()
+                        coffeeMachine.reState("start");
                     }
                     "3" -> {
-                        if (hasWater >= cappuccinoWater && hasBeans >= cappuccinoBeans && hasMilk >= cappuccinoMilk && hasCups > 0) {
+                        if (hasWater >= cappuccino.water && hasBeans >= cappuccino.beans && hasMilk >= cappuccino.milk && hasCups > 0) {
                             println("I have enough resources, making you a coffee!")
-                            hasWater -= cappuccinoWater
-                            hasBeans -= cappuccinoBeans
-                            hasMilk -= cappuccinoMilk
+                            hasWater -= cappuccino.water
+                            hasBeans -= cappuccino.beans
+                            hasMilk -= cappuccino.milk
                             hasCups--
-                            hasMoney += cappuccinoMoney
-                        } else if (hasWater < cappuccinoWater) {
+                            hasMoney += cappuccino.money
+                        } else if (hasWater < cappuccino.water) {
                             println("Sorry, not enough water!")
-                        } else if (hasBeans < cappuccinoBeans) {
+                        } else if (hasBeans < cappuccino.beans) {
                             println("Sorry, not enough coffee beans!")
-                        } else if (hasMilk < cappuccinoMilk) {
+                        } else if (hasMilk < cappuccino.milk) {
                             println("Sorry, not enough milk!")
                         } else {
                             println("Sorry, not enough cups!")
                         }
-                        action = action()
+                        coffeeMachine.reState("start");
                     }
-                    "back" -> action = action()
+                    "back" -> coffeeMachine.reState("start");
                 }
             }
             "fill" -> {
                 print("\nWrite how many ml of water do you want to add: ")
-                val howWaterFill = scanner.nextInt()
+                hasWater += coffeeMachine.inputData().toInt()
                 print("Write how many ml of milk do you want to add: ")
-                val howMilkFill = scanner.nextInt()
+                hasMilk += coffeeMachine.inputData().toInt()
                 print("Write how many grams of coffee beans do you want to add: ")
-                val howBeansFill = scanner.nextInt()
+                hasBeans += coffeeMachine.inputData().toInt()
                 print("Write how many disposable cups of coffee do you want to add: ")
-                val howCupsFill = scanner.nextInt()
-                hasWater += howWaterFill
-                hasMilk += howMilkFill
-                hasBeans += howBeansFill
-                hasCups += howCupsFill
-                action = action()
+                hasCups += coffeeMachine.inputData().toInt()
+                coffeeMachine.reState("start");
             }
             "take" -> {
                 println("\nI gave you \$$hasMoney")
                 hasMoney -= hasMoney
-                action = action()
+                coffeeMachine.reState("start");
             }
             "remaining" -> {
-                println(printResult(hasWater, hasMilk, hasBeans, hasCups, hasMoney))
-                action = action()
+                println(coffeeMachine.printResult(hasWater, hasMilk, hasBeans, hasCups, hasMoney))
+                coffeeMachine.reState("start");
             }
             "exit" -> {
-                action = ""
+                coffeeMachine.reState("");
             }
-            else -> action = ""
+            else -> coffeeMachine.reState("");
         }
     }
 }
